@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Olimpiadas del Mar 2026</title>
+<style>
+  :root {
+    --ob: #0D1B6E;
+    --ot: #1CB88A;
+    --otl: #e1f5ee;
+    --otd: #0F6E56;
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --text: #0D1B6E;
+    --muted: #6b7a99;
+    --border: #dde3f0;
+    --danger: #E24B4A;
+    --warn-bg: #FAEEDA;
+    --warn-border: #FAC775;
+    --warn-text: #633806;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; background: var(--bg); font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif; }
+  body { overflow-x: hidden; }
+
+  .app { max-width: 480px; margin: 0 auto; padding: 16px 16px 40px; }
+
+  /* TOPBAR */
+  .topbar {
+    background: var(--ob);
+    border-radius: 20px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .tdot {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--ot);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: #fff; font-weight: 700; flex-shrink: 0;
+  }
+  .topbar h1 { font-size: 18px; font-weight: 700; color: #fff; line-height: 1.3; }
+  .srow { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+  .sdot { width: 9px; height: 9px; border-radius: 50%; background: #555; flex-shrink: 0; transition: background 0.3s; }
+  .sdot.ok { background: var(--ot); }
+  .sdot.err { background: var(--danger); }
+  .sdot.spin { background: #FAC775; animation: pu 1s infinite; }
+  @keyframes pu { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .stxt { font-size: 12px; color: rgba(255,255,255,0.55); }
+
+  /* SCREENS */
+  .sc { display: none; }
+  .sc.active { display: block; }
+
+  /* CARD */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 14px;
+  }
+  .sh {
+    font-size: 12px; font-weight: 700; color: var(--ot);
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;
+  }
+
+  /* FORM */
+  label { font-size: 15px; color: var(--muted); display: block; margin-bottom: 6px; font-weight: 500; }
+  input, select {
+    width: 100%; margin-bottom: 14px;
+    font-size: 17px; padding: 14px 16px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-family: inherit;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--ot); }
+
+  /* BUTTONS */
+  .btn {
+    cursor: pointer; font-size: 17px; font-weight: 600;
+    padding: 16px 20px; border-radius: 14px;
+    border: none; width: 100%; display: block;
+    text-align: center; font-family: inherit;
+    margin-bottom: 10px; transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn:active { opacity: 0.8; transform: scale(0.98); }
+  .bp { background: var(--ob); color: #fff; }
+  .bt { background: var(--ot); color: #fff; }
+  .bo { background: transparent; color: var(--ob); border: 2px solid var(--ob) !important; }
+  .bsm { padding: 12px 16px; font-size: 15px; margin-bottom: 8px; }
+  .brow { display: flex; gap: 10px; }
+  .brow .btn { margin-bottom: 0; flex: 1; }
+
+  /* PILLS */
+  .pills {
+    display: flex; overflow-x: auto; gap: 10px;
+    margin-bottom: 16px; padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .pills::-webkit-scrollbar { display: none; }
+  .pill {
+    flex-shrink: 0; padding: 10px 18px; font-size: 15px; font-weight: 600;
+    border-radius: 24px; border: 2px solid var(--ob);
+    background: transparent; color: var(--ob);
+    cursor: pointer; font-family: inherit; white-space: nowrap;
+  }
+  .pill.active { background: var(--ob); color: #fff; }
+
+  /* AVATAR */
+  .av {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0;
+  }
+  .avt { background: var(--ot); }
+  .avb { background: var(--ob); }
+
+  /* SCORE GRID */
+  .egrid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-top: 10px; }
+  .ebox { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .elbl { font-size: 11px; color: var(--muted); text-align: center; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  .einp {
+    width: 100%; font-size: 22px; text-align: center;
+    padding: 12px 4px; border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: var(--bg); color: var(--ob);
+    font-family: inherit; font-weight: 700;
+  }
+  .einp:focus { outline: none; border-color: var(--ot); }
+  .tbadge {
+    background: var(--ob); color: #fff;
+    border-radius: 10px; padding: 8px 14px;
+    font-size: 20px; font-weight: 700; min-width: 54px; text-align: center;
+  }
+
+  /* WINNER CARD */
+  .wcard {
+    background: var(--ob); border-radius: 20px;
+    padding: 28px 20px; margin-bottom: 14px; text-align: center;
+  }
+  .wlbl { font-size: 12px; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; font-weight: 700; }
+  .wname { font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .wsub { font-size: 15px; color: var(--ot); font-weight: 600; }
+  .wpts { font-size: 56px; font-weight: 800; color: var(--ot); line-height: 1; margin-top: 16px; }
+  .wptsl { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* ALERTS */
+  .abox {
+    background: var(--otl); border: 1.5px solid var(--ot);
+    border-radius: 14px; padding: 16px; font-size: 15px;
+    color: var(--otd); margin-bottom: 14px; font-weight: 500; line-height: 1.5;
+  }
+  .warnbox {
+    background: var(--warn-bg); border: 1.5px solid var(--warn-border);
+    border-radius: 14px; padding: 16px; font-size: 15px;
+    color: var(--warn-text); margin-bottom: 14px; font-weight: 500;
+  }
+
+  /* RANKING ROWS */
+  .rrow { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .rrow:last-child { border-bottom: none; }
+  .rnum { font-size: 18px; font-weight: 700; min-width: 26px; color: var(--muted); }
+  .bwrap { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; margin-top: 6px; }
+  .bar { height: 8px; border-radius: 4px; background: var(--ot); }
+  .barb { background: var(--ob); }
+
+  /* TAGS */
+  .tag { display: inline-block; font-size: 12px; padding: 3px 9px; border-radius: 8px; font-weight: 700; margin-left: 6px; }
+  .tgold { background: #FAEEDA; color: #633806; }
+  .tsilver { background: #D3D1C7; color: #2C2C2A; }
+  .tbronze { background: #F5C4B3; color: #4A1B0C; }
+
+  /* CLASS CARDS */
+  .clscard {
+    border: 2px solid var(--border); border-radius: 14px;
+    padding: 16px; margin-bottom: 10px; cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .clscard.done { border-color: var(--ot); background: var(--otl); }
+  .clscard:active { opacity: 0.8; }
+
+
+  /* RANKING BUTTON IN TOPBAR */
+  .btn-ranking-top {
+    flex-shrink: 0;
+    background: var(--ot);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    line-height: 1.2;
+    transition: opacity 0.15s;
+  }
+  .btn-ranking-top:active { opacity: 0.75; }
+
+  /* FLOATING RANKING BUTTON */
+
+  /* CODE BLOCK */
+  .code {
+    margin-top: 10px; background: #f0f2f8; border-radius: 12px;
+    padding: 14px; font-family: 'Menlo', 'Courier New', monospace;
+    font-size: 11px; color: #444; white-space: pre-wrap;
+    word-break: break-all; line-height: 1.6; max-height: 300px; overflow-y: auto;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="tdot">O</div>
+    <div style="flex:1;min-width:0">
+      <h1>Olimpiadas del Mar</h1>
+      <div class="srow">
+        <div class="sdot" id="sd"></div>
+        <span class="stxt" id="st">Sin configurar</span>
+      </div>
+    </div>
+    <button class="btn-ranking-top" onclick="showRankingCiudad()">
+      <span style="font-size:18px">&#9654;</span>
+      <span>Ranking</span>
+    </button>
+  </div>
+
+  <!-- CONFIG -->
+  <div id="s-cfg" class="sc active">
+    <div class="card">
+      <div class="sh">Conectar con Google Sheets</div>
+      <label>URL del Web App (Apps Script)</label>
+      <input type="url" id="cfg-url" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:14px">
+      <button class="btn bp" onclick="saveConfig()">Guardar y continuar</button>
+      <button class="btn bo bsm" onclick="toggleInstr()">Cómo obtener la URL</button>
+    </div>
+    <div id="instr" style="display:none">
+      <div class="card">
+        <div class="sh">Pasos de configuración</div>
+        <div style="font-size:15px;color:var(--text);line-height:2">
+          <b style="color:var(--ob)">1.</b> Crea un Google Sheet nuevo en blanco.<br>
+          <b style="color:var(--ob)">2.</b> Menú: <i>Extensiones → Apps Script</i>.<br>
+          <b style="color:var(--ob)">3.</b> Borra todo y pega el código de abajo.<br>
+          <b style="color:var(--ob)">4.</b> Guarda (Ctrl+S).<br>
+          <b style="color:var(--ob)">5.</b> <i>Implementar → Nueva implementación → Aplicación web → Acceso: Cualquier persona → Implementar</i>.<br>
+          <b style="color:var(--ob)">6.</b> Autoriza y copia la URL.<br>
+          <b style="color:var(--ob)">7.</b> Pégala arriba y pulsa Guardar.
+        </div>
+        <div class="code">const SHEET_NAME="Puntuaciones";
+function doPost(e){
+  try{
+    var d=JSON.parse(e.postData.contents);
+    var ss=SpreadsheetApp.getActiveSpreadsheet();
+    var sh=ss.getSheetByName(SHEET_NAME);
+    if(!sh){
+      sh=ss.insertSheet(SHEET_NAME);
+      sh.appendRow(["Timestamp","Ciudad","Colegio","Clase","Equipo","Est1","Est2","Est3","Est4","Total"]);
+      sh.getRange(1,1,1,10).setFontWeight("bold").setBackground("#0D1B6E").setFontColor("#ffffff");
+      sh.setFrozenRows(1);
+    }
+    var rows=sh.getDataRange().getValues();
+    for(var i=rows.length-1;i>=1;i--){
+      if(rows[i][1]===d.ciudad&&rows[i][2]===d.colegio&&rows[i][3]===d.clase){
+        sh.deleteRow(i+1);
+      }
+    }
+    var ts=new Date().toISOString();
+    d.equipos.forEach(function(eq){
+      var t=(eq.e1||0)+(eq.e2||0)+(eq.e3||0)+(eq.e4||0);
+      sh.appendRow([ts,d.ciudad,d.colegio,d.clase,eq.nombre,eq.e1||0,eq.e2||0,eq.e3||0,eq.e4||0,t]);
+    });
+    return ContentService.createTextOutput(JSON.stringify({ok:true})).setMimeType(ContentService.MimeType.JSON);
+  }catch(err){
+    return ContentService.createTextOutput(JSON.stringify({ok:false,error:err.toString()})).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+function doGet(e){
+  try{
+    var ciudad=e.parameter.ciudad||"";
+    var ss=SpreadsheetApp.getActiveSpreadsheet();
+    var sh=ss.getSheetByName(SHEET_NAME);
+    if(!sh) return ContentService.createTextOutput(JSON.stringify({ok:true,data:[]})).setMimeType(ContentService.MimeType.JSON);
+    var rows=sh.getDataRange().getValues();
+    var result=[];
+    for(var i=1;i&lt;rows.length;i++){
+      var r=rows[i];
+      if(!ciudad||r[1]===ciudad){
+        result.push({ciudad:r[1],colegio:r[2],clase:r[3],equipo:r[4],e1:r[5],e2:r[6],e3:r[7],e4:r[8],total:r[9]});
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify({ok:true,data:result})).setMimeType(ContentService.MimeType.JSON);
+  }catch(err){
+    return ContentService.createTextOutput(JSON.stringify({ok:false,error:err.toString()})).setMimeType(ContentService.MimeType.JSON);
+  }
+}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INICIO -->
+  <div id="s-inicio" class="sc">
+    <div class="card">
+      <div class="sh">¿Dónde estamos hoy?</div>
+      <label>Ciudad</label>
+      <select id="sel-city">
+        <option value="">— Elige ciudad —</option>
+        <option>Barcelona</option>
+        <option>Madrid</option>
+        <option>Alicante</option>
+        <option>Zaragoza</option>
+        <option>Las Palmas de Gran Canaria</option>
+      </select>
+      <label>Nombre del colegio</label>
+      <input type="text" id="inp-cole" placeholder="CEIP nombre del colegio">
+      <label>Número de clases hoy</label>
+      <select id="sel-cls">
+        <option value="1">1 clase</option>
+        <option value="2">2 clases</option>
+        <option value="3">3 clases</option>
+      </select>
+      <button class="btn bp" onclick="goClases()">Empezar</button>
+      <button class="btn bo bsm" onclick="show('s-cfg')">Cambiar configuración</button>
+    </div>
+  </div>
+
+  <!-- CLASES -->
+  <div id="s-clases" class="sc">
+    <div class="card">
+      <div class="sh" id="cls-hdr"></div>
+      <div id="cls-list"></div>
+      <div class="brow" style="margin-top:10px">
+        <button class="btn bo bsm" onclick="show('s-inicio')" style="flex:1">Cambiar cole</button>
+        <button class="btn bt bsm" onclick="showRankingCiudad()" style="flex:2">Ranking ciudad</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EQUIPOS -->
+  <div id="s-equipos" class="sc">
+    <div class="card">
+      <div class="sh" id="eq-hdr"></div>
+      <label>Número de equipos</label>
+      <select id="sel-neq" onchange="renderEqInputs()">
+        <option value="3">3 equipos</option>
+        <option value="4">4 equipos</option>
+        <option value="5" selected>5 equipos</option>
+      </select>
+      <div id="eq-inputs"></div>
+      <button class="btn bp" onclick="goScoring()">Anotar puntos</button>
+      <button class="btn bo bsm" onclick="show('s-clases')">Volver</button>
+    </div>
+  </div>
+
+  <!-- SCORING -->
+  <div id="s-scoring" class="sc">
+    <div id="scoring-cards"></div>
+    <button class="btn bt" onclick="guardarYVer()">Guardar y ver podio</button>
+    <button class="btn bo bsm" onclick="show('s-equipos')">Volver</button>
+  </div>
+
+  <!-- PODIO -->
+  <div id="s-podio" class="sc">
+    <div id="podio-content"></div>
+    <button class="btn bp" onclick="show('s-clases')">Siguiente clase / volver</button>
+  </div>
+
+  <!-- RANKING SELECTOR -->
+  <div id="s-ranking-selector" class="sc">
+    <div class="card">
+      <div class="sh">Ranking</div>
+      <label>¿Qué ranking quieres ver?</label>
+      <select id="sel-ranking-city">
+        <option value="">— Todas las ciudades —</option>
+        <option>Barcelona</option>
+        <option>Madrid</option>
+        <option>Alicante</option>
+        <option>Zaragoza</option>
+        <option>Las Palmas de Gran Canaria</option>
+      </select>
+      <button class="btn bp" onclick="rankingFromSelector()">Ver ranking</button>
+      <button class="btn bo bsm" onclick="st.ciudad?show('s-clases'):show('s-inicio')">Volver</button>
+    </div>
+  </div>
+
+  <!-- RANKING -->
+  <div id="s-ranking" class="sc">
+    <div id="ranking-content"></div>
+    <button class="btn bo" onclick="st.ciudad?show('s-clases'):show('s-inicio')" style="margin-top:4px">Volver al marcador</button>
+  </div>
+
+
+
+</div>
+
+<script>
+var URL_KEY='om_url_v1', SURL='';
+var st={ciudad:'',cole:'',numCls:1,activeCls:0,clsData:{}};
+
+function el(id){return document.getElementById(id)}
+function show(id){
+  document.querySelectorAll('.sc').forEach(function(s){s.classList.remove('active')});
+  el(id).classList.add('active');
+  window.scrollTo(0,0);
+
+}
+function sync(s,t){el('sd').className='sdot'+(s?' '+s:'');el('st').textContent=t}
+
+function saveConfig(){
+  var u=el('cfg-url').value.trim();
+  if(!u||!u.startsWith('http')){alert('Introduce una URL válida');return;}
+  SURL=u;
+  try{localStorage.setItem(URL_KEY,u);}catch(e){}
+  sync('ok','Conectado a Google Sheets');
+  show('s-inicio');
+}
+
+function toggleInstr(){
+  var b=el('instr');
+  b.style.display=b.style.display==='none'?'block':'none';
+}
+
+function goClases(){
+  var city=el('sel-city').value, cole=el('inp-cole').value.trim();
+  if(!city||!cole){alert('Rellena ciudad y colegio');return;}
+  st.ciudad=city; st.cole=cole;
+  st.numCls=parseInt(el('sel-cls').value);
+  st.clsData={};
+  renderClsList(); show('s-clases');
+}
+
+function renderClsList(){
+  el('cls-hdr').textContent=st.cole+' · '+st.ciudad;
+  var h='';
+  for(var i=0;i<st.numCls;i++){
+    var done=st.clsData[i]&&st.clsData[i].guardado;
+    h+='<div class="clscard'+(done?' done':'')+'" onclick="selectCls('+i+')">';
+    h+='<div style="display:flex;align-items:center;justify-content:space-between">';
+    h+='<div style="font-size:18px;font-weight:700;color:var(--ob)">Clase '+(i+1)+'</div>';
+    h+='<div style="font-size:14px;color:'+(done?'var(--otd)':'var(--muted)')+';font-weight:600">'+(done?'Guardada ✓':'Pendiente')+'</div>';
+    h+='</div>';
+    if(done&&st.clsData[i].equipos){
+      var eq=st.clsData[i].equipos.slice().sort(function(a,b){return(b.e1+b.e2+b.e3+b.e4)-(a.e1+a.e2+a.e3+a.e4)});
+      h+='<div style="font-size:14px;color:var(--otd);margin-top:6px;font-weight:500">Ganador: '+eq[0].nombre+'</div>';
+    }
+    h+='</div>';
+  }
+  el('cls-list').innerHTML=h;
+}
+
+function selectCls(idx){
+  st.activeCls=idx;
+  if(!st.clsData[idx])st.clsData[idx]={equipos:[],guardado:false};
+  el('eq-hdr').textContent=st.cole+' · Clase '+(idx+1);
+  renderEqInputs(); show('s-equipos');
+}
+
+function renderEqInputs(){
+  var n=parseInt(el('sel-neq').value), cd=st.clsData[st.activeCls], h='';
+  for(var i=0;i<n;i++){
+    var nom=(cd&&cd.equipos&&cd.equipos[i])?cd.equipos[i].nombre:'';
+    h+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">';
+    h+='<div class="av avt">'+(i+1)+'</div>';
+    h+='<input type="text" class="enm" data-idx="'+i+'" placeholder="Nombre del buque..." value="'+nom+'" style="flex:1;margin-bottom:0">';
+    h+='</div>';
+  }
+  el('eq-inputs').innerHTML=h;
+}
+
+function goScoring(){
+  var inputs=document.querySelectorAll('.enm'), equipos=[];
+  inputs.forEach(function(inp,i){
+    var prev=st.clsData[st.activeCls]&&st.clsData[st.activeCls].equipos&&st.clsData[st.activeCls].equipos[i];
+    equipos.push({nombre:inp.value||'Equipo '+(i+1),e1:prev?prev.e1:0,e2:prev?prev.e2:0,e3:prev?prev.e3:0,e4:prev?prev.e4:0});
+  });
+  st.clsData[st.activeCls].equipos=equipos;
+  renderScoringCards(); show('s-scoring');
+}
+
+function renderScoringCards(){
+  var eq=st.clsData[st.activeCls].equipos, cls=st.activeCls;
+  var h='<div style="font-size:15px;font-weight:700;color:var(--ob);margin-bottom:12px">'+st.cole+' · Clase '+(cls+1)+'</div>';
+  eq.forEach(function(e,i){
+    var tot=e.e1+e.e2+e.e3+e.e4;
+    h+='<div class="card">';
+    h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">';
+    h+='<div style="display:flex;align-items:center;gap:12px">';
+    h+='<div class="av avb">'+(i+1)+'</div>';
+    h+='<div style="font-size:16px;font-weight:700;color:var(--text)">'+e.nombre+'</div></div>';
+    h+='<div class="tbadge" id="tot-'+cls+'-'+i+'">'+tot+'</div></div>';
+    h+='<div class="egrid">';
+    ['e1','e2','e3','e4'].forEach(function(f,fi){
+      h+='<div class="ebox"><div class="elbl">Est.'+(fi+1)+'</div>';
+      h+='<input type="number" inputmode="numeric" min="0" max="99" value="'+e[f]+'" class="einp" data-cls="'+cls+'" data-idx="'+i+'" data-est="'+f+'" oninput="upd(this)">';
+      h+='</div>';
+    });
+    h+='</div></div>';
+  });
+  el('scoring-cards').innerHTML=h;
+}
+
+function upd(inp){
+  var cls=parseInt(inp.dataset.cls), idx=parseInt(inp.dataset.idx), est=inp.dataset.est;
+  var val=Math.max(0,parseInt(inp.value)||0); inp.value=val;
+  st.clsData[cls].equipos[idx][est]=val;
+  var e=st.clsData[cls].equipos[idx];
+  el('tot-'+cls+'-'+idx).textContent=e.e1+e.e2+e.e3+e.e4;
+}
+
+function guardarYVer(){
+  var cls=st.activeCls, equipos=st.clsData[cls].equipos;
+  sync('spin','Guardando...');
+  if(SURL){
+    fetch(SURL,{method:'POST',mode:'no-cors',body:JSON.stringify({ciudad:st.ciudad,colegio:st.cole,clase:'Clase '+(cls+1),equipos:equipos}),headers:{'Content-Type':'text/plain'}})
+      .then(function(){sync('ok','Guardado en Sheets');})
+      .catch(function(){sync('err','Sin conexión');});
+  } else sync('err','Sin URL configurada');
+  st.clsData[cls].guardado=true;
+  renderPodio(cls); show('s-podio'); renderClsList();
+}
+
+function renderPodio(cls){
+  var eq=st.clsData[cls].equipos.slice().sort(function(a,b){return(b.e1+b.e2+b.e3+b.e4)-(a.e1+a.e2+a.e3+a.e4)});
+  var mx=eq[0]?(eq[0].e1+eq[0].e2+eq[0].e3+eq[0].e4):1; if(!mx)mx=1;
+  var medals=['tgold','tsilver','tbronze'], mt=['Oro','Plata','Bronce'];
+  var w=eq[0], wp=w?(w.e1+w.e2+w.e3+w.e4):0;
+  var h='<div class="wcard"><div class="wlbl">Mejor equipo · Clase '+(cls+1)+'</div>';
+  h+='<div class="wname">'+(w?w.nombre:'—')+'</div>';
+  h+='<div class="wsub">'+st.cole+'</div>';
+  h+='<div class="wpts">'+wp+'</div><div class="wptsl">puntos</div></div>';
+  h+='<div class="card"><div class="sh">Clasificación de la clase</div>';
+  eq.forEach(function(e,i){
+    var tot=e.e1+e.e2+e.e3+e.e4, pct=Math.round(tot/mx*100);
+    h+='<div class="rrow"><div class="rnum">'+(i+1)+'</div><div style="flex:1">';
+    h+='<div style="display:flex;align-items:center">';
+    h+='<span style="font-size:16px;font-weight:700;color:var(--ob)">'+e.nombre+'</span>';
+    if(i<3)h+='<span class="tag '+medals[i]+'">'+mt[i]+'</span>';
+    h+='</div><div class="bwrap"><div class="bar'+(i?'b':'')+' bar" style="width:'+pct+'%"></div></div></div>';
+    h+='<div style="text-align:right;min-width:52px"><div style="font-size:20px;font-weight:700;color:var(--ob)">'+tot+'</div>';
+    h+='<div style="font-size:12px;color:var(--muted)">pts</div></div></div>';
+  });
+  h+='</div>';
+  el('podio-content').innerHTML=h;
+}
+
+function showRankingCiudad(){
+  if(!SURL){
+    el('ranking-content').innerHTML='<div class="warnbox">Configura primero la URL de Google Sheets.</div>';
+    show('s-ranking'); return;
+  }
+  // Preseleccionar ciudad actual si hay una
+  var sel=el('sel-ranking-city');
+  if(sel && st.ciudad) sel.value=st.ciudad;
+  show('s-ranking-selector');
+}
+
+function cargarRankingCiudad(ciudad){
+  sync('spin','Cargando ranking...');
+  var label=ciudad||'Todas las ciudades';
+  el('ranking-content').innerHTML='<div class="card" style="text-align:center;padding:3rem;color:var(--muted);font-size:16px">Cargando '+label+'...</div>';
+  show('s-ranking');
+  fetch(SURL+'?ciudad='+encodeURIComponent(ciudad))
+    .then(function(r){return r.text();})
+    .then(function(txt){
+      var d=JSON.parse(txt);
+      if(!d.ok){el('ranking-content').innerHTML='<div class="warnbox">Error al cargar datos.</div>';sync('err','Error');return;}
+      sync('ok','Datos actualizados');
+      renderRankingCiudad(d.data, ciudad);
+    }).catch(function(err){
+      sync('err','Sin conexión');
+      el('ranking-content').innerHTML='<div class="warnbox">Sin conexión. Comprueba internet.</div>';
+    });
+}
+
+function renderRankingCiudad(data, ciudad){
+  if(!data||!data.length){el('ranking-content').innerHTML='<div class="warnbox">No hay datos todavía.</div>';return;}
+  var byEq={};
+  data.forEach(function(r){
+    var k=r.ciudad+'||'+r.colegio+'||'+r.equipo;
+    if(!byEq[k])byEq[k]={ciudad:r.ciudad,colegio:r.colegio,equipo:r.equipo,e1:0,e2:0,e3:0,e4:0};
+    byEq[k].e1+=Number(r.e1)||0; byEq[k].e2+=Number(r.e2)||0;
+    byEq[k].e3+=Number(r.e3)||0; byEq[k].e4+=Number(r.e4)||0;
+  });
+  var eq=Object.values(byEq).sort(function(a,b){return(b.e1+b.e2+b.e3+b.e4)-(a.e1+a.e2+a.e3+a.e4)});
+  var mx=eq[0]?(eq[0].e1+eq[0].e2+eq[0].e3+eq[0].e4):1; if(!mx)mx=1;
+  var medals=['tgold','tsilver','tbronze'], mt=['Oro','Plata','Bronce'];
+  var w=eq[0], wp=w?(w.e1+w.e2+w.e3+w.e4):0;
+  var titulo=ciudad?('Equipo ganador · '+ciudad):'Mejor equipo · Todas las ciudades';
+  var h='<div class="wcard"><div class="wlbl">'+titulo+'</div>';
+  h+='<div class="wname">'+(w?w.equipo:'—')+'</div>';
+  h+='<div class="wsub">'+(w?(ciudad?w.colegio:w.colegio+' · '+w.ciudad):'')+'</div>';
+  h+='<div class="wpts">'+wp+'</div><div class="wptsl">puntos totales</div></div>';
+  if(ciudad) h+='<div class="abox">Este equipo representa a '+ciudad+' en la Gran Final de Madrid.</div>';
+  h+='<div class="card"><div class="sh">Ranking · '+(ciudad?ciudad:'todas las ciudades')+'</div>';
+  eq.forEach(function(e,i){
+    var tot=e.e1+e.e2+e.e3+e.e4, pct=Math.round(tot/mx*100);
+    h+='<div class="rrow"><div class="rnum">'+(i+1)+'</div><div style="flex:1">';
+    h+='<div style="display:flex;align-items:center">';
+    h+='<span style="font-size:16px;font-weight:700;color:var(--ob)">'+e.equipo+'</span>';
+    if(i<3)h+='<span class="tag '+medals[i]+'">'+mt[i]+'</span>';
+    h+='</div><div style="font-size:13px;color:var(--muted);margin-bottom:4px">'+e.colegio+(ciudad?'':' · '+e.ciudad)+'</div>';
+    h+='<div class="bwrap"><div class="bar'+(i?'b':'')+' bar" style="width:'+pct+'%"></div></div></div>';
+    h+='<div style="text-align:right;min-width:52px"><div style="font-size:20px;font-weight:700;color:var(--ob)">'+tot+'</div>';
+    h+='<div style="font-size:12px;color:var(--muted)">pts</div></div></div>';
+  });
+  h+='</div>';
+  el('ranking-content').innerHTML=h;
+}
+
+function rankingFromSelector(){
+  var city=el('sel-ranking-city').value;
+  cargarRankingCiudad(city);
+}
+
+(function(){
+  try{
+    var u=localStorage.getItem(URL_KEY);
+    if(u){SURL=u; el('cfg-url').value=u; sync('ok','Conectado a Google Sheets'); show('s-inicio');}
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
